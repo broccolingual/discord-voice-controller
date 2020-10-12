@@ -2,7 +2,8 @@ import os
 import logging
 from pathlib import Path
 
-from discord.ext import commands, tasks
+from discord.ext import commands
+import settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -41,4 +42,4 @@ if __name__ == '__main__':
         if file.endswith('.py') and not file.startswith('_'):
             bot.load_extension(f'cogs.{file[:-3]}')
 
-bot.run('NzY0NTEwMDIxMzI5MDkyNjA5.X4HTcA.8ToRa95L2Jak4PqOWvj8PueM7Es')
+bot.run(settings.TOKEN)
