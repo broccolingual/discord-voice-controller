@@ -21,12 +21,14 @@ async def _mute(payload):
     vc = payload.guild.me.voice.channel
     for member in vc.members:
         await member.edit(mute=True)
+    return vc
 
 
 async def _unmute(payload):
     vc = payload.guild.me.voice.channel
     for member in vc.members:
         await member.edit(mute=False)
+    return vc
 
 
 class Controller(commands.Cog):
@@ -73,10 +75,7 @@ class Controller(commands.Cog):
 
             if reaction.emoji == MUTE_EMOJI:
                 await reaction.clear()
-
-                message_id = reaction.message.id
-
-                msg = await reaction.message.channel.fetch_message(int(message_id))
+                msg = await reaction.message.channel.fetch_message(int(reaction.message.id))
                 await msg.add_reaction(UNMUTE_EMOJI)
 
                 if not msg.embeds:
@@ -97,19 +96,13 @@ class Controller(commands.Cog):
                 embed_after.add_field(name=embed_before.fields[0].name,
                                       value=f'{MUTE_EMOJI} mute')
 
-                vc = reaction.message.guild.me.voice.channel
-                for member in vc.members:
-                    await member.edit(mute=True)
-
+                vc = await _mute(reaction.message)  # MUTE
                 await msg.edit(embed=embed_after)
                 logger.info(f'{vc.name} channel[voice] users were muted')
 
             if reaction.emoji == UNMUTE_EMOJI:
                 await reaction.clear()
-
-                message_id = reaction.message.id
-
-                msg = await reaction.message.channel.fetch_message(int(message_id))
+                msg = await reaction.message.channel.fetch_message(int(reaction.message.id))
                 await msg.add_reaction(MUTE_EMOJI)
 
                 if not msg.embeds:
@@ -130,10 +123,7 @@ class Controller(commands.Cog):
                 embed_after.add_field(name=embed_before.fields[0].name,
                                       value=f'{UNMUTE_EMOJI} unmute')
 
-                vc = reaction.message.guild.me.voice.channel
-                for member in vc.members:
-                    await member.edit(mute=False)
-
+                vc = await _unmute(reaction.message)  # UNMUTE
                 await msg.edit(embed=embed_after)
                 logger.info(f'{vc.name} channel[voice] users were unmuted')
 
